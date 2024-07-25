@@ -1,0 +1,32 @@
+version: "3.8" # Versão do Docker Compose 
+
+services: # Serviços
+  frontend: # Nome do container
+    depends_on: # Usado para apenas buildar quando um serviço estiver ok 
+      - backend
+    build: ./frontend # Reliza o processo de build através de um Dockerfile que está dentro do diretório.
+    ports:
+      - 3000:3000 # Porta  host:container
+
+
+  backend: # Nome do container
+    depends_on: # Usado para apenas buildar quando um serviço estiver ok 
+      - db
+    build: ./backend # Reliza o processo de build através de um Dockerfile que está dentro do diretório.
+    ports:
+      - 3001:3001 # Porta  host:container
+    environment: # Atribui veriaveis 
+      DB_URL: mongodb://db/vidly
+    command: ./docker-entrypoint.sh  # usado para executar comandos OBS: sempre utilize a nomeclatura entrypoint.sh 
+  
+  
+  db: # Nome do container
+    image: mongo:4.0-xenial # Utiliza uma imagem no docker hub
+    ports:
+      - 27017:27017 # Porta  host:container
+    volumes:
+      - vidly:/data/db # Utilizado para toda vez que subir um novo build, o diretorio ainda continuará com os mesmo dados. 
+
+
+volumes: # Volume usado para armazenar arquivos ou diretórios
+  vidly:
